@@ -3,13 +3,19 @@ const { QueryTypes } = require("sequelize");
 const { AuthorNotFoundError, BookNotFoundError } = require("../utils/error");
 
 class BookController {
-    constructor(model, db) {
-        this.model = model
+    constructor(bookModel, authorModel, db) {
+        this.bookModel = bookModel
+        this.authorModel = authorModel
         this.db = db
     }
 
     async getList(limit, offset) {
-        const result = await this.model.findAll({ limit: limit, offset: offset })
+        const result = await this.bookModel.findAll({
+            order: [['id', 'DESC']],
+            limit: limit,
+            offset: offset,
+            include: this.authorModel
+        })
         return result
     }
 
@@ -31,7 +37,7 @@ class BookController {
     }
 
     async updateBook(id, name, authorId, price) {
-        const isBookExists = await this.model.findOne({
+        const isBookExists = await this.bookModel.findOne({
             where: {
                 id: id
             }
@@ -52,7 +58,7 @@ class BookController {
             throw new AuthorNotFoundError()
         }
 
-        await this.model.update({ name: name, authorId: authorId, price: price }, {
+        await this.bookModel.update({ name: name, authorId: authorId, price: price }, {
             where: {
                 id: id
             }
@@ -60,7 +66,7 @@ class BookController {
     }
 
     async deleteBook(id) {
-        const isBookExists = await this.model.findOne({
+        const isBookExists = await this.bookModel.findOne({
             where: {
                 id: id
             }
@@ -70,7 +76,7 @@ class BookController {
             throw new BookNotFoundError()
         }
 
-        await this.model.destroy({
+        await this.bookModel.destroy({
             where: {
                 id: id
             }

@@ -9,10 +9,14 @@ class AuthorController {
     }
 
     async getList(limit, offset) {
-        const result = await this.db.query("SELECT * FROM author LIMIT :limit OFFSET :offset", {
+        const authors = await this.db.query("SELECT * FROM author ORDER BY id DESC LIMIT :limit OFFSET :offset", {
             type: QueryTypes.SELECT,
             replacements: { limit: limit, offset: offset }
         })
+
+        const [queryResult] = await this.db.query("SELECT COUNT(id) FROM author")
+        const [count] = queryResult
+        const result = { rows: authors, count: parseInt(count.count) }
         return result
     }
 
