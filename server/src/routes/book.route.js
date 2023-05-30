@@ -5,7 +5,8 @@ const getBooksSchema = {
             properties: {
                 limit: { type: 'integer', minimum: 0 },
                 offset: { type: 'integer', minimum: 0 }
-            }
+            },
+            required: ['limit', 'offset']
         }
     }
 }
