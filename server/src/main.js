@@ -1,5 +1,6 @@
 const { Sequelize } = require('sequelize')
 const Fastify = require('fastify')
+const cors = require('@fastify/cors')
 require('dotenv').config()
 
 const AuthorModel = require('./models/author.model')
@@ -25,6 +26,16 @@ async function connectDb() {
 async function main() {
     const db = await connectDb()
     const server = Fastify({ logger: true })
+    await server.register(cors, {
+        origin: (origin, cb) => {
+            const hostname = new URL(origin).hostname
+            if (hostname === "localhost") {
+                cb(null, true)
+                return
+            }
+            cb(new Error("Not allowed"), false)
+        }
+    })
 
     const Author = AuthorModel(db)
     const Book = BookModel(db)
