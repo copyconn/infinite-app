@@ -28,6 +28,10 @@ async function main() {
     const server = Fastify({ logger: true })
     await server.register(cors, {
         origin: (origin, cb) => {
+
+            cb(null, true)
+            return
+
             const hostname = new URL(origin).hostname
             if (hostname === "localhost") {
                 cb(null, true)
@@ -44,7 +48,7 @@ async function main() {
     Book.belongsTo(Author, { foreignKey: 'author_id', onDelete: 'CASCADE' })
 
     const authorController = new AuthorController(Author, db)
-    const bookController = new BookController(Book, db)
+    const bookController = new BookController(Book, Author, db)
 
     registerAuthor(server, authorController)
     registerBook(server, bookController)
