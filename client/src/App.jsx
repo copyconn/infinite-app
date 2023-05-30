@@ -7,7 +7,7 @@ export const dataContext = createContext({})
 
 function App() {
     const [page, setPage] = useState(true)
-    const [authors, setAuthors] = useState([])
+    const [authors, setAuthors] = useState({ rows: [], count: 0 })
     const [books, setBooks] = useState([])
 
     const togglePage = (page) => {
@@ -20,7 +20,7 @@ function App() {
 
     const getAuthorsData = async () => {
         try {
-            const result = await getAuthors(3, 2)
+            const result = await getAuthors(10, 0)
             setAuthors(result.data)
         } catch (error) {
             if (axios.isAxiosError(error)) {
@@ -33,7 +33,7 @@ function App() {
 
     const getBooksData = async () => {
         try {
-            const result = await getBooks(3, 2)
+            const result = await getBooks(10, 0)
             setBooks(result.data)
         } catch (error) {
             if (axios.isAxiosError(error)) {
@@ -48,6 +48,7 @@ function App() {
         getAuthorsData()
         getBooksData()
     }, [])
+
 
     const data = { page, togglePage, authors, books }
 
