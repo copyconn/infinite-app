@@ -1,1 +1,1 @@
-export { getAuthors, getBooks } from './requests'
+export { getAuthors, getBooks, createBook } from './requests'

@@ -1,6 +1,5 @@
 import React, { useContext } from "react";
 import {
-    IconGitPullRequest,
     IconAlertCircle,
     IconMessages,
     IconDatabase,
@@ -11,7 +10,6 @@ import { dataContext } from "../../../App";
 
 const data = [
     { icon: <IconDatabase size="1rem"/>, color: 'grape', label: 'Tables' },
-    // { icon: <IconGitPullRequest size="1rem"/>, color: 'blue', label: 'Pull Requests' },
     { icon: <IconAlertCircle size="1rem"/>, color: 'teal', label: 'Information' },
     { icon: <IconMessages size="1rem"/>, color: 'violet', label: 'Comments' },
 ]

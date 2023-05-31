@@ -11,3 +11,6 @@ export const getAuthors = (limit, offset) =>
 
 export const getBooks = (limit, offset) =>
     axiosInstance.get(`api/books?limit=${limit}&offset=${offset}`)
+
+export const createBook = (name, authorId, price) =>
+    axiosInstance.post(`api/books`, { name: name, authorId: authorId, price: price })

@@ -18,9 +18,6 @@ export const Dashboard = () => {
                     <Navbar.Section grow mt="xs">
                         <Navigation/>
                     </Navbar.Section>
-                    {/*<Navbar.Section>*/}
-                    {/*    /!*<User/>*!/*/}
-                    {/*</Navbar.Section>*/}
                 </Navbar>
             }
             header={
@@ -32,7 +29,6 @@ export const Dashboard = () => {
             }
         >
             {data.page && <Tables/>}
-
         </AppShell>
     )
 }
