@@ -1,22 +1,9 @@
-const getBooksSchema = {
-    schema: {
-        querystring: {
-            type: 'object',
-            properties: {
-                limit: { type: 'integer', minimum: 0 },
-                offset: { type: 'integer', minimum: 0 }
-            },
-            required: ['limit', 'offset']
-        }
-    }
-}
-
 const createBookSchema = {
     schema: {
         body: {
             type: 'object',
             properties: {
-                name: { type: 'string', minLength: 1, pattern: "^[а-яА-Я]+$" },
+                name: { type: 'string', minLength: 1, pattern: "^[а-яА-Я ]+$" },
                 authorId: { type: 'integer', minimum: 1 },
                 price: { type: 'number', minimum: 0 }
             },
@@ -57,10 +44,8 @@ const deleteBookSchema = {
 
 function register(server, controller) {
 
-    server.get('/api/books', getBooksSchema, async (request, reply) => {
-        const limit = request.query.limit
-        const offset = request.query.offset
-        const result = await controller.getList(limit, offset)
+    server.get('/api/books', async (request, reply) => {
+        const result = await controller.getList()
         return result
     })
 

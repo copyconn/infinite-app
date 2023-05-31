@@ -9,11 +9,9 @@ class BookController {
         this.db = db
     }
 
-    async getList(limit, offset) {
+    async getList() {
         const result = await this.bookModel.findAll({
-            order: [['id', 'DESC']],
-            limit: limit,
-            offset: offset,
+            order: [['created_at', 'DESC']],
             include: this.authorModel
         })
         return result
