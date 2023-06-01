@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { TextInput, Button, Group, Box, Select } from '@mantine/core';
 import { useForm } from '@mantine/form';
 
-import { createBook, getAuthors } from "../../../../api";
+import { getAuthors } from "../../../../api";
 
 export const Form = ({ book, onSubmit }) => {
     const [authors, setAuthors] = useState([])
@@ -15,7 +15,7 @@ export const Form = ({ book, onSubmit }) => {
     const form = useForm({
         initialValues: {
             name: book?.name ?? '',
-            authorId: book?.Author?.name ?? '',
+            authorId: book?.Author?.id ?? '',
             price: book?.price ?? 0,
         },
 
@@ -32,11 +32,6 @@ export const Form = ({ book, onSubmit }) => {
         },
     });
 
-    // const postData = async (values) => {
-    //     await createBook(values.name, values.author, values.price)
-    //     onSubmit({})
-    // }
-
     useEffect(() => {
         getAuthorsData()
     }, [])
@@ -47,11 +42,7 @@ export const Form = ({ book, onSubmit }) => {
 
     return (
         <Box maw={300} mx="auto" style={{ height: 400 }}>
-            {/*<form onSubmit={form.onSubmit((values) => postData(values))}>*/}
-            <form onSubmit={form.onSubmit((values) => {
-                onSubmit({ ...book, ...values })
-
-            })}>
+            <form onSubmit={form.onSubmit((values) => onSubmit({ ...book, ...values }))}>
                 <TextInput
                     withAsterisk
                     label="Название"

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { AgGridReact } from "ag-grid-react";
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
@@ -10,11 +10,12 @@ import { columnsAuthor, columnsBook } from "./utils";
 
 import { Form } from "./Form";
 
-import { createBook, getAuthors, getBooks } from "../../../api";
+import { createBook, deleteBook, getAuthors, getBooks, updateBook } from "../../../api";
 
 export const Tables = () => {
     const [books, setBooks] = useState([])
     const [selected, setSelected] = useState(null)
+    const gridRef = useRef()
 
     const [opened, { open, close }] = useDisclosure(false);
 
@@ -58,17 +59,37 @@ export const Tables = () => {
 
     const sendData = async (book) => {
         if (book.id) {
-
+            await updateBook(book.id, book.name, book.authorId, book.price)
         } else {
             await createBook(book.name, book.authorId, book.price)
         }
         await getBooksData()
         close()
+        setSelected(null)
+    }
+
+    const deleteData = async (id) => {
+        await deleteBook(id)
+        await getBooksData()
     }
 
     useEffect(() => {
         getBooksData()
     }, [])
+
+    const onSelectionChanged = useCallback(() => {
+        const selectedRows = gridRef.current.api.getSelectedRows();
+        setSelected(selectedRows[0])
+    }, [])
+
+    const getRowId = useCallback(params => {
+        return params.data.id
+    })
+
+    const openFormCreate = () => {
+        setSelected(null)
+        open()
+    }
 
     const booksTableData = books.map((bookRow) => {
         const date = new Date(bookRow.createdAt).toLocaleDateString()
@@ -77,7 +98,7 @@ export const Tables = () => {
 
     return (
         <div>
-            <Modal opened={opened} onClose={close} title="Authentication" centered>
+            <Modal opened={opened} onClose={close} centered>
                 <Form book={selected} onSubmit={sendData}/>
             </Modal>
 
@@ -98,16 +119,21 @@ export const Tables = () => {
                 <h3>Таблица "Книги"</h3>
 
                 <div style={{ display: 'flex', gap: 10 }}>
-                    <Button variant={"outline"} onClick={open}>Добавить запись</Button>
-                    <Button variant={"outline"}>Изменить запись</Button>
-                    <Button variant={"outline"}>Удалить запись</Button>
+                    <Button variant={"outline"} onClick={openFormCreate}>Добавить запись</Button>
+                    <Button variant={"outline"} disabled={!selected} onClick={open}>Изменить
+                        запись</Button>
+                    <Button variant={"outline"} disabled={!selected} onClick={() => deleteData(selected?.id)}>Удалить
+                        запись</Button>
                 </div>
 
                 <div className="ag-theme-alpine" style={{ height: 400, width: 800, marginTop: 10 }}>
                     <AgGridReact
+                        getRowId={getRowId}
+                        ref={gridRef}
                         rowData={booksTableData}
                         columnDefs={columnsBook}
                         rowSelection={'single'}
+                        onSelectionChanged={onSelectionChanged}
                     ></AgGridReact>
                 </div>
             </div>

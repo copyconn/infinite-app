@@ -14,3 +14,9 @@ export const getBooks = (limit, offset) =>
 
 export const createBook = (name, authorId, price) =>
     axiosInstance.post(`api/books`, { name: name, authorId: authorId, price: price })
+
+export const updateBook = (id, name, authorId, price) =>
+    axiosInstance.put(`api/books/${id}`, { name: name, authorId: authorId, price: price })
+
+export const deleteBook = (id) =>
+    axiosInstance.delete(`api/books/${id}`)
