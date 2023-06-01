@@ -17,7 +17,7 @@ const updateBookSchema = {
         body: {
             type: 'object',
             properties: {
-                name: { type: 'string', minLength: 1, pattern: "^[а-яА-Я]+$" },
+                name: { type: 'string', minLength: 1, pattern: "^[а-яА-Я ]+$" },
                 authorId: { type: 'integer', minimum: 1 },
                 price: { type: 'number', minimum: 0 }
             },

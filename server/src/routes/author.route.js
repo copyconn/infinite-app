@@ -16,7 +16,7 @@ const createAuthorSchema = {
         body: {
             type: 'object',
             properties: {
-                name: { type: 'string', minLength: 1, pattern: "^[а-яА-Я]+$" },
+                name: { type: 'string', minLength: 1, pattern: "^[а-яА-Я ]+$" },
                 rating: { type: 'number', minimum: 0, maximum: 10 }
             },
             required: ['name']
@@ -29,7 +29,7 @@ const updateAuthorSchema = {
         body: {
             type: 'object',
             properties: {
-                name: { type: 'string', minLength: 1, pattern: "^[а-яА-Я]+$" },
+                name: { type: 'string', minLength: 1, pattern: "^[а-яА-Я ]+$" },
                 rating: { type: 'number', minimum: 0, maximum: 10 }
             },
         },
