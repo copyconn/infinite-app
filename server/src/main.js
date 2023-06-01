@@ -10,42 +10,31 @@ const registerBook = require('./routes/book.route')
 const AuthorController = require('./controllers/author.controller')
 const BookController = require('./controllers/book.controller')
 
-async function connectDb() {
+async function initDB() {
     const databaseUrl = process.env.POSTGRES_URL
-    const sequelize = new Sequelize(databaseUrl)
+    const db = new Sequelize(databaseUrl)
     try {
-        await sequelize.authenticate();
+        await db.authenticate();
         console.log('Connection has been established successfully.');
     } catch (error) {
         console.error('Unable to connect to the database:', error);
     }
-
-    return sequelize
-}
-
-async function main() {
-    const db = await connectDb()
-    const server = Fastify({ logger: true })
-    await server.register(cors, {
-        origin: (origin, cb) => {
-
-            cb(null, true)
-            return
-
-            const hostname = new URL(origin).hostname
-            if (hostname === "localhost") {
-                cb(null, true)
-                return
-            }
-            cb(new Error("Not allowed"), false)
-        }
-    })
 
     const Author = AuthorModel(db)
     const Book = BookModel(db)
 
     Author.hasMany(Book, { foreignKey: 'author_id' })
     Book.belongsTo(Author, { foreignKey: 'author_id', onDelete: 'CASCADE' })
+
+    return { db, Author, Book }
+}
+
+async function main() {
+    const { db, Author, Book } = await initDB()
+    const server = Fastify({ logger: true })
+    await server.register(cors, {
+        origin: ['http://localhost:3001']
+    })
 
     const authorController = new AuthorController(Author, db)
     const bookController = new BookController(Book, Author, db)

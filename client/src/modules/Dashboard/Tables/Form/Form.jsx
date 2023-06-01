@@ -8,8 +8,8 @@ export const Form = ({ book, onSubmit }) => {
     const [authors, setAuthors] = useState([])
 
     const getAuthorsData = async () => {
-        const result = await getAuthors(0, 0)
-        setAuthors(result.data.rows)
+        const { rows } = await getAuthors(0, 0)
+        setAuthors(rows)
     }
 
     const form = useForm({
@@ -65,7 +65,7 @@ export const Form = ({ book, onSubmit }) => {
                 />
 
                 <Group position="right" mt="md">
-                    <Button type="submit">Submit</Button>
+                    <Button type="submit">Отправить</Button>
                 </Group>
             </form>
         </Box>

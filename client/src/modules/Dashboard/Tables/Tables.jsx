@@ -13,36 +13,22 @@ import { Form } from "./Form";
 import { createBook, deleteBook, getAuthors, getBooks, updateBook } from "../../../api";
 
 export const Tables = () => {
+    const gridRef = useRef()
     const [books, setBooks] = useState([])
     const [selected, setSelected] = useState(null)
-    const gridRef = useRef()
-
     const [opened, { open, close }] = useDisclosure(false);
-
-    const getBooksData = async () => {
-        try {
-            const result = await getBooks()
-            setBooks(result.data)
-        } catch (error) {
-            if (axios.isAxiosError(error)) {
-                console.log(error.response.data.message)
-            } else {
-                console.log('unexpected error: ', error);
-            }
-        }
-    }
 
     const onGridReady = useCallback((params) => {
         const dataSource = {
             rowCount: undefined,
             getRows: (params) => {
                 getAuthors(params.endRow - params.startRow, params.startRow)
-                    .then((result) => {
-                        const authors = result.data.rows.map((authorRow) => {
+                    .then(({ rows, count }) => {
+                        const authors = rows.map((authorRow) => {
                             const date = new Date(authorRow.created_at).toLocaleDateString()
                             return { ...authorRow, created_at: date }
                         })
-                        params.successCallback(authors, result.data.count)
+                        params.successCallback(authors, count)
                     })
                     .catch(error => {
                         if (axios.isAxiosError(error)) {
@@ -57,26 +43,6 @@ export const Tables = () => {
         params.api.setDatasource(dataSource);
     }, [])
 
-    const sendData = async (book) => {
-        if (book.id) {
-            await updateBook(book.id, book.name, book.authorId, book.price)
-        } else {
-            await createBook(book.name, book.authorId, book.price)
-        }
-        await getBooksData()
-        close()
-        setSelected(null)
-    }
-
-    const deleteData = async (id) => {
-        await deleteBook(id)
-        await getBooksData()
-    }
-
-    useEffect(() => {
-        getBooksData()
-    }, [])
-
     const onSelectionChanged = useCallback(() => {
         const selectedRows = gridRef.current.api.getSelectedRows();
         setSelected(selectedRows[0])
@@ -85,6 +51,41 @@ export const Tables = () => {
     const getRowId = useCallback(params => {
         return params.data.id
     })
+
+    const getBooksData = async () => {
+        try {
+            const rows = await getBooks()
+            setBooks(rows)
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                console.log(error.response.data.message)
+            } else {
+                console.log('unexpected error: ', error);
+            }
+        }
+    }
+
+    const sendBookData = async (book) => {
+        if (book.id) {
+            await updateBook(book.id, book.name, book.authorId, book.price)
+        } else {
+            await createBook(book.name, book.authorId, book.price)
+        }
+
+        await getBooksData()
+
+        close()
+        setSelected(null)
+    }
+
+    const deleteBookData = async (id) => {
+        await deleteBook(id)
+        await getBooksData()
+    }
+
+    useEffect(() => {
+        getBooksData()
+    }, [])
 
     const openFormCreate = () => {
         setSelected(null)
@@ -99,7 +100,7 @@ export const Tables = () => {
     return (
         <div>
             <Modal opened={opened} onClose={close} centered>
-                <Form book={selected} onSubmit={sendData}/>
+                <Form book={selected} onSubmit={sendBookData}/>
             </Modal>
 
             <div>
@@ -122,7 +123,7 @@ export const Tables = () => {
                     <Button variant={"outline"} onClick={openFormCreate}>Добавить запись</Button>
                     <Button variant={"outline"} disabled={!selected} onClick={open}>Изменить
                         запись</Button>
-                    <Button variant={"outline"} disabled={!selected} onClick={() => deleteData(selected?.id)}>Удалить
+                    <Button variant={"outline"} disabled={!selected} onClick={() => deleteBookData(selected?.id)}>Удалить
                         запись</Button>
                 </div>
 

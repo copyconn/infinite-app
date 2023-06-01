@@ -14,7 +14,7 @@ function App() {
             setPage(false)
         }
     }
-    
+
     const data = { page, togglePage }
 
     return (
